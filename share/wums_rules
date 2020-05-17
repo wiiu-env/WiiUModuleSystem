@@ -1,0 +1,38 @@
+#---------------------------------------------------------------------------------
+.SUFFIXES:
+#---------------------------------------------------------------------------------
+
+ifeq ($(strip $(DEVKITPRO)),)
+$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitPro")
+endif
+
+ifeq ($(strip $(DEVKITPPC)),)
+$(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>/devkitPro/devkitPPC")
+endif
+
+include $(DEVKITPPC)/base_rules
+
+PORTLIBS	:=	$(PORTLIBS_PATH)/wiiu $(PORTLIBS_PATH)/ppc
+
+export PATH := $(PORTLIBS_PATH)/wiiu/bin:$(PORTLIBS_PATH)/ppc/bin:$(PATH)
+
+WUMS_ROOT	?=	$(DEVKITPRO)/wums
+
+WUMSSPECS	:=	-specs=$(WUMS_ROOT)/share/wums.specs
+
+MACHDEP	= -DESPRESSO -mcpu=750 -meabi -mhard-float
+
+#---------------------------------------------------------------------------------
+%.wms: %.elf
+	@cp $< $*.strip.elf
+	@$(STRIP) -g $*.strip.elf
+	@elf2rpl $*.strip.elf $@
+	@printf '\xAF\xFE' | dd of=$@ bs=1 seek=9 count=2 conv=notrunc status=none
+	@rm $*.strip.elf
+	@echo built ... $(notdir $@)
+    
+#---------------------------------------------------------------------------------
+%.elf:
+	@echo linking ... $(notdir $@)
+	@$(LD) $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
+	@$(NM) -CSn $@ > $(notdir $*.lst)
