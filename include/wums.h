@@ -3,5 +3,6 @@
 
 #include "wums/common.h"
 #include "wums/exports.h"
+#include "wums/hooks.h"
 
 #endif /* WUMS_H_ */
