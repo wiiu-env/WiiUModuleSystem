@@ -41,6 +41,9 @@ extern "C" {
 typedef enum wums_hook_type_t {
     WUMS_HOOK_INIT,
     WUMS_HOOK_APPLICATION_STARTS,
+    WUMS_HOOK_APPLICATION_ENDS,
+    WUMS_HOOK_INIT_WUT,
+    WUMS_HOOK_FINI_WUT,
 } wums_hook_type_t;
 
 typedef struct wums_hook_t {
@@ -61,6 +64,46 @@ typedef struct wums_hook_t {
     WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_STARTS, __wums_start); \
     void __wums_start()
     
+#define WUMS_APPLICATION_ENDS() \
+    void __wums_end(void);\
+    WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_ENDS, __wums_end); \
+    void __wums_end()
+    
+#ifdef __cplusplus
+#define WUMS_INIT_WUT() \
+    void __wums_init_wut(void);\
+    extern "C" void __init_wut(void);\
+    void __wums_init_wut(){ \
+        __init_wut(); \
+    } \
+    WUMS_HOOK_EX(WUMS_HOOK_INIT_WUT, __wums_init_wut)
+#else
+#define WUMS_INIT_WUT() \
+    void __wums_init_wut(void);\
+    extern void __init_wut(void);\
+    void __wums_init_wut(){ \
+        __init_wut(); \
+    } \
+    WUMS_HOOK_EX(WUMS_HOOK_INIT_WUT, __wums_init_wut)
+#endif
+
+#ifdef __cplusplus
+#define WUMS_FINI_WUT() \
+    void __wums_fini_wut(void);\
+    extern "C" void __fini_wut(void);\
+    void __wums_fini_wut(){ \
+        __fini_wut(); \
+    } \
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT, __wums_fini_wut)
+#else
+#define WUMS_FINI_WUT() \
+    void __wums_fini_wut(void);\
+    extern void __fini_wut(void);\
+    void __wums_fini_wut(){ \
+        __fini_wut(); \
+    } \
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT, __wums_fini_wut)
+#endif
 
 #ifdef __cplusplus
 }
