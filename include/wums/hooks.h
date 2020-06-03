@@ -39,19 +39,28 @@ extern "C" {
     }
 
 typedef enum wums_hook_type_t {
-    WUMS_HOOK_INIT,                   /* Called when exiting the plugin loader */
+    WUMS_HOOK_INIT,
+    WUMS_HOOK_APPLICATION_STARTS,
 } wums_hook_type_t;
 
 typedef struct wums_hook_t {
-    wums_hook_type_t type;       /*  Defines the type of the hook */
-    const void *target;                 /*  Address of our own, new function */
+    wums_hook_type_t type;          /*  Defines the type of the hook */
+    const void *target;             /*  Address of our own, new function */
 } wums_hook_t;
 
 
 #define WUMS_INITIALIZE() \
-    void init_module(void);\
-    WUMS_HOOK_EX(WUMS_HOOK_INIT,init_module); \
-    void init_module()
+    WUMS_INIT_WUT(); \
+    WUMS_FINI_WUT(); \
+    void __wums__init(void);\
+    WUMS_HOOK_EX(WUMS_HOOK_INIT, __wums__init); \
+    void __wums__init()
+
+#define WUMS_APPLICATION_STARTS() \
+    void __wums_start(void);\
+    WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_STARTS, __wums_start); \
+    void __wums_start()
+    
 
 #ifdef __cplusplus
 }

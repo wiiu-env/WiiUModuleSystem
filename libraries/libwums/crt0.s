@@ -15,12 +15,7 @@ __wums_start:
    bl __init_wut
    lwz 4, 0x1C(31)   
    lwz 3, 0x18(31)   
-   bl main
-   or 9, 3, 3
-   stw 9, 0x8(31)   
-   bl __fini_wut
-   lwz 9, 0x8(31)
-   or 3, 9, 9
+   bl main  
    addi 11, 31, 0x28
    lwz 0, 0x4(11)
    mtlr 0
