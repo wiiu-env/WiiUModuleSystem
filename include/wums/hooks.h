@@ -26,6 +26,7 @@
 #pragma once
 
 #include "common.h"
+#include "defines/module_defines.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,13 +52,16 @@ typedef struct wums_hook_t {
     const void *target;             /*  Address of our own, new function */
 } wums_hook_t;
 
+typedef struct wums_app_init_args_t {
+    module_information_t* module_information;
+} wums_app_init_args_t;
 
-#define WUMS_INITIALIZE() \
+#define WUMS_INITIALIZE(myargs) \
     WUMS_INIT_WUT(); \
     WUMS_FINI_WUT(); \
-    void __wums__init(void);\
+    void __wums__init(wums_app_init_args_t);\
     WUMS_HOOK_EX(WUMS_HOOK_INIT, __wums__init); \
-    void __wums__init()
+    void __wums__init(wums_app_init_args_t myargs)
 
 #define WUMS_APPLICATION_STARTS() \
     void __wums_start(void);\
