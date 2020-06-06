@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <stdbool.h>
+#include "defines/module_defines.h"
 
 #ifdef __cplusplus
 extern "C" {
