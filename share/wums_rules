@@ -10,17 +10,11 @@ ifeq ($(strip $(DEVKITPPC)),)
 $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>/devkitPro/devkitPPC")
 endif
 
-include $(DEVKITPPC)/base_rules
-
-PORTLIBS	:=	$(PORTLIBS_PATH)/wiiu $(PORTLIBS_PATH)/ppc
-
-export PATH := $(PORTLIBS_PATH)/wiiu/bin:$(PORTLIBS_PATH)/ppc/bin:$(PATH)
+include $(DEVKITPRO)/wut/share/wut_rules
 
 WUMS_ROOT	?=	$(DEVKITPRO)/wums
 
-WUMSSPECS	:=	-specs=$(WUMS_ROOT)/share/wums.specs
-
-MACHDEP	= -DESPRESSO -mcpu=750 -meabi -mhard-float
+WUMSSPECS	:= -T$(WUMS_ROOT)/share/wums.ld -specs=$(WUMS_ROOT)/share/wums.specs 
 
 #---------------------------------------------------------------------------------
 %.wms: %.elf
@@ -30,9 +24,3 @@ MACHDEP	= -DESPRESSO -mcpu=750 -meabi -mhard-float
 	@printf '\xAF\xFE' | dd of=$@ bs=1 seek=9 count=2 conv=notrunc status=none
 	@rm $*.strip.elf
 	@echo built ... $(notdir $@)
-    
-#---------------------------------------------------------------------------------
-%.elf:
-	@echo linking ... $(notdir $@)
-	@$(LD) $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
-	@$(NM) -CSn $@ > $(notdir $*.lst)
