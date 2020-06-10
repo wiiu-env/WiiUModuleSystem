@@ -57,8 +57,10 @@ struct module_information_single_t {
 };
 
 #define MAXIMUM_MODULES                                     8
+#define MODULE_INFORMATION_VERSION                          0x00000001
 
 struct module_information_t {
+    uint32_t                        version = MODULE_INFORMATION_VERSION;
     int32_t                         number_used_modules = 0;                        // Number of used function. Maximum is MAXIMUM_MODULES
     dyn_linking_relocation_data_t   linking_data;
     relocation_trampolin_entry_t    trampolines[DYN_LINK_TRAMPOLIN_LIST_LENGTH];
