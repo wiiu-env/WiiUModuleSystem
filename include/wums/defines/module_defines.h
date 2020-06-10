@@ -53,6 +53,7 @@ struct module_information_single_t {
     uint32_t                        entrypoint;
     uint32_t                        startAddress;
     uint32_t                        endAddress;
+    uint8_t                         initBeforeEntrypoint;
 };
 
 #define MAXIMUM_MODULES                                     8
