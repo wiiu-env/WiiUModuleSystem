@@ -45,6 +45,7 @@ typedef enum wums_hook_type_t {
     WUMS_HOOK_APPLICATION_ENDS,
     WUMS_HOOK_INIT_WUT,
     WUMS_HOOK_FINI_WUT,
+    WUMS_HOOK_RELOCATIONS_DONE,
 } wums_hook_type_t;
 
 typedef struct wums_hook_t {
@@ -55,6 +56,10 @@ typedef struct wums_hook_t {
 typedef struct wums_app_init_args_t {
     module_information_t* module_information;
 } wums_app_init_args_t;
+
+typedef struct wums_relocs_done_args_t {
+    module_information_t* module_information;
+} wums_relocs_done_args_t;
 
 #define WUMS_INITIALIZE(myargs) \
     WUMS_INIT_WUT(); \
@@ -72,6 +77,11 @@ typedef struct wums_app_init_args_t {
     void __wums_end(void);\
     WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_ENDS, __wums_end); \
     void __wums_end()
+        
+#define WUMS_RELOCATIONS_DONE(myargs) \
+    void __wums_relocations_done(wums_relocs_done_args_t);\
+    WUMS_HOOK_EX(WUMS_HOOK_RELOCATIONS_DONE, __wums_relocations_done); \
+    void __wums_relocations_done(wums_relocs_done_args_t myargs)
     
 #ifdef __cplusplus
 #define WUMS_INIT_WUT() \
