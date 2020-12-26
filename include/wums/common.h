@@ -51,7 +51,8 @@ extern "C" {
 #define WUMS_MODULE_VERSION(x) WUMS_META(version, x)
 #define WUMS_MODULE_LICENSE(x) WUMS_META(license, x)
 #define WUMS_MODULE_DESCRIPTION(x) WUMS_META(description, x)
-#define WUMS_MODULE_INIT_BEFORE_ENTRYPOINT() WUMS_META(initBeforeEntrypoint, "true")
+#define WUMS_MODULE_SKIP_ENTRYPOINT() WUMS_META(skipEntrypoint, "true")
+#define WUMS_MODULE_INIT_BEFORE_RELOCATION_DONE_HOOK() WUMS_META(initBeforeRelocationDoneHook, "true")
 
 #ifdef __cplusplus
 }

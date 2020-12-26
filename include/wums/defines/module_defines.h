@@ -53,11 +53,12 @@ struct module_information_single_t {
     uint32_t                        entrypoint;
     uint32_t                        startAddress;
     uint32_t                        endAddress;
-    uint8_t                         initBeforeEntrypoint;
+    uint8_t                         skipEntrypoint;
+    uint8_t                         initBeforeRelocationDoneHook;
 };
 
 #define MAXIMUM_MODULES                                     8
-#define MODULE_INFORMATION_VERSION                          0x00000001
+#define MODULE_INFORMATION_VERSION                          0x00000002
 
 struct module_information_t {
     uint32_t                        version = MODULE_INFORMATION_VERSION;

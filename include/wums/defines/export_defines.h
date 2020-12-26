@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint>
+#include <stdint.h>
 
 #define EXPORT_MAXIMUM_NAME_LENGTH     50
 typedef struct export_data_t {
