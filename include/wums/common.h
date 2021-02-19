@@ -53,6 +53,7 @@ extern "C" {
 #define WUMS_MODULE_DESCRIPTION(x) WUMS_META(description, x)
 #define WUMS_MODULE_SKIP_ENTRYPOINT() WUMS_META(skipEntrypoint, "true")
 #define WUMS_MODULE_INIT_BEFORE_RELOCATION_DONE_HOOK() WUMS_META(initBeforeRelocationDoneHook, "true")
+#define WUMS_MODULE_SKIP_WUT_INIT() WUMS_META(skipwutInit, "true")
 
 #ifdef __cplusplus
 }

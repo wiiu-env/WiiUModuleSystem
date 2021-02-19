@@ -55,10 +55,11 @@ struct module_information_single_t {
     uint32_t                        endAddress;
     uint8_t                         skipEntrypoint;
     uint8_t                         initBeforeRelocationDoneHook;
+    uint8_t                         skipWUTInit;
 };
 
 #define MAXIMUM_MODULES                                     8
-#define MODULE_INFORMATION_VERSION                          0x00000002
+#define MODULE_INFORMATION_VERSION                          0x00000003
 
 struct module_information_t {
     uint32_t                        version = MODULE_INFORMATION_VERSION;
