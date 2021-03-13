@@ -46,6 +46,7 @@ typedef enum wums_hook_type_t {
     WUMS_HOOK_INIT_WUT,
     WUMS_HOOK_FINI_WUT,
     WUMS_HOOK_RELOCATIONS_DONE,
+    WUMS_HOOK_APPLICATION_REQUESTS_EXIT,
 } wums_hook_type_t;
 
 typedef struct wums_hook_t {
@@ -77,6 +78,11 @@ typedef struct wums_relocs_done_args_t {
     void __wums_end(void);\
     WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_ENDS, __wums_end); \
     void __wums_end()
+
+#define WUMS_APPLICATION_REQUESTS_EXIT() \
+    void __wums_requests_exit(void);\
+    WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_REQUESTS_EXIT, __wums_requests_exit); \
+    void __wums_requests_exit()
         
 #define WUMS_RELOCATIONS_DONE(myargs) \
     void __wums_relocations_done(wums_relocs_done_args_t);\
