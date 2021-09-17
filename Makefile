@@ -2,8 +2,8 @@ TOPDIR ?= $(CURDIR)
 include $(TOPDIR)/share/wums_rules
 
 export WUMS_MAJOR	:=	0
-export WUMS_MINOR	:=	1
-export WUMS_PATCH	:=	3
+export WUMS_MINOR	:=	2
+export WUMS_PATCH	:=	0
 
 VERSION	:=	$(WUMS_MAJOR).$(WUMS_MINOR).$(WUMS_PATCH)
 

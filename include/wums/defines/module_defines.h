@@ -32,15 +32,15 @@ extern "C" {
 
 #define DYN_LINK_RELOCATION_LIST_LENGTH                     500
 #define EXPORT_ENTRY_LIST_LENGTH                            100
-#define HOOK_ENTRY_LIST_LENGTH                              10
+#define HOOK_ENTRY_LIST_LENGTH                              20
 
 typedef struct hook_data_t {
     uint32_t type;
-    uint32_t target = 0;
+    uint32_t target;
 } hook_data_t;
 
-struct module_information_single_t {
-    char                            path[MAXIMUM_MODULE_PATH_NAME_LENGTH] = "";     // Path where the module is stored
+typedef struct module_information_single_t {
+    char                            path[MAXIMUM_MODULE_PATH_NAME_LENGTH];     // Path where the module is stored
     dyn_linking_relocation_entry_t  linking_entries[DYN_LINK_RELOCATION_LIST_LENGTH];
     char                            module_export_name[MAXIMUM_EXPORT_MODULE_NAME_LENGTH];
     export_data_t                   export_entries[EXPORT_ENTRY_LIST_LENGTH];
@@ -55,19 +55,18 @@ struct module_information_single_t {
     uint32_t                        endAddress;
     uint8_t                         skipEntrypoint;
     uint8_t                         initBeforeRelocationDoneHook;
-    uint8_t                         skipWUTInit;
-};
+} module_information_single_t;
 
 #define MAXIMUM_MODULES                                     8
-#define MODULE_INFORMATION_VERSION                          0x00000003
+#define MODULE_INFORMATION_VERSION                          0x00000004
 
-struct module_information_t {
-    uint32_t                        version = MODULE_INFORMATION_VERSION;
-    int32_t                         number_used_modules = 0;                        // Number of used function. Maximum is MAXIMUM_MODULES
+typedef struct module_information_t {
+    uint32_t                        version;
+    int32_t                         number_used_modules;                        // Number of used function. Maximum is MAXIMUM_MODULES
     dyn_linking_relocation_data_t   linking_data;
     relocation_trampolin_entry_t    trampolines[DYN_LINK_TRAMPOLIN_LIST_LENGTH];
     module_information_single_t     module_data[MAXIMUM_MODULES];
-};
+} module_information_t;
 
 #ifdef __cplusplus
 }

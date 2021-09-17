@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -39,13 +40,13 @@ typedef struct _dyn_linking_function_t {
 
 typedef struct _dyn_linking_import_t {
     char importName[DYN_LINK_IMPORT_NAME_LENGTH + 1];
-    bool isData = false;
+    bool isData;
 } dyn_linking_import_t;
 
 typedef struct _dyn_linking_relocation_entry_t {
-    dyn_linking_function_t *functionEntry = NULL;
-    dyn_linking_import_t *importEntry = NULL;
-    void *destination = NULL;
+    dyn_linking_function_t *functionEntry;
+    dyn_linking_import_t *importEntry;
+    void *destination;
     char type;
     size_t offset;
     int32_t addend;

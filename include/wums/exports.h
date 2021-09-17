@@ -2,7 +2,7 @@
  *   by Alex Chadwick
  *
  * Copyright (C) 2014, Alex Chadwick
- * Modified by Maschell, 2018-2020
+ * Modified by Maschell, 2018-2021
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-#ifndef WUMS_FUNCTION_EXPORT_DEF_H_
-#define WUMS_FUNCTION_EXPORT_DEF_H_
+#pragma once
 
 #include "common.h"
 
@@ -55,9 +54,6 @@ typedef struct wums_entry_t {
         .address = (const void*) value \
     }
 
-
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* WUMS_FUNCTION_EXPORT_DEF_H_ */
