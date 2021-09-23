@@ -32,7 +32,15 @@
 extern "C" {
 #endif
 
-#define WUMS_MODULE_EXPORT_NAME(x) WUMS_META(export_name, x); WUMS_META(wum, "0.2"); WUMS_USE_WUT_MALLOC() WUMS_USE_WUT_SOCKETS() WUMS_USE_WUT_NEWLIB() WUMS_USE_WUT_STDCPP() WUMS_META(buildtimestamp, __DATE__ " " __TIME__);
+#define WUMS_MODULE_EXPORT_NAME(x) \
+            WUMS_META(export_name, x); \
+            WUMS_META(wum, "0.2");     \
+            WUMS_USE_WUT_MALLOC();     \
+            WUMS_USE_WUT_SOCKETS();    \
+            WUMS_USE_WUT_NEWLIB();      \
+            WUMS_USE_WUT_STDCPP();     \
+            WUMS_META(buildtimestamp, __DATE__ " " __TIME__)
+
 #define WUMS_MODULE_AUTHOR(x)  WUMS_META(author, x)
 #define WUMS_MODULE_VERSION(x) WUMS_META(version, x)
 #define WUMS_MODULE_LICENSE(x) WUMS_META(license, x)

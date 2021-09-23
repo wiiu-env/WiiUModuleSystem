@@ -28,3 +28,5 @@ debug/
 *.jekyll-metadata
 *.cbp
 *.a
+cmake-build-debug/
+CMakeLists.txt

@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#define WUMS_HOOK_EX(type_def,original_func) \
+#define WUMS_HOOK_EX(type_def, original_func) \
     extern const wums_hook_t wums_hooks_ ## original_func WUMS_SECTION("hooks"); \
     const wums_hook_t wums_hooks_ ## original_func = { \
         .type = type_def, \
@@ -64,11 +64,11 @@ typedef struct wums_hook_t {
 } wums_hook_t;
 
 typedef struct wums_app_init_args_t {
-    module_information_t* module_information;
+    module_information_t *module_information;
 } wums_app_init_args_t;
 
 typedef struct wums_relocs_done_args_t {
-    module_information_t* module_information;
+    module_information_t *module_information;
 } wums_relocs_done_args_t;
 
 #define WUMS_INITIALIZE(myargs) \
@@ -80,7 +80,7 @@ typedef struct wums_relocs_done_args_t {
     void __wums_start(void);\
     WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_STARTS, __wums_start); \
     void __wums_start()
-    
+
 #define WUMS_APPLICATION_ENDS() \
     void __wums_end(void);\
     WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_ENDS, __wums_end); \
@@ -90,7 +90,7 @@ typedef struct wums_relocs_done_args_t {
     void __wums_requests_exit(void);\
     WUMS_HOOK_EX(WUMS_HOOK_APPLICATION_REQUESTS_EXIT, __wums_requests_exit); \
     void __wums_requests_exit()
-        
+
 #define WUMS_RELOCATIONS_DONE(myargs) \
     void __wums_relocations_done(wums_relocs_done_args_t);\
     WUMS_HOOK_EX(WUMS_HOOK_RELOCATIONS_DONE, __wums_relocations_done); \
@@ -112,7 +112,7 @@ typedef struct wums_relocs_done_args_t {
     void on_fini_wut_malloc(){ \
         __fini_wut_malloc(); \
     } \
-    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_MALLOC,on_fini_wut_malloc); \
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_MALLOC,on_fini_wut_malloc)
 
 #define WUMS_USE_WUT_DEVOPTAB() \
     __EXTERN_C_MACRO void __init_wut_devoptab(); \
@@ -124,7 +124,7 @@ typedef struct wums_relocs_done_args_t {
     void on_fini_wut_devoptab(){ \
         __fini_wut_devoptab(); \
     }\
-    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_DEVOPTAB,on_fini_wut_devoptab);
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_DEVOPTAB,on_fini_wut_devoptab)
 
 #define WUMS_USE_WUT_NEWLIB() \
     __EXTERN_C_MACRO void __init_wut_newlib(); \
@@ -136,7 +136,7 @@ typedef struct wums_relocs_done_args_t {
     void on_fini_wut_newlib(){ \
         __fini_wut_newlib(); \
     }\
-    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_NEWLIB,on_fini_wut_newlib);
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_NEWLIB,on_fini_wut_newlib)
 
 #define WUMS_USE_WUT_STDCPP() \
     __EXTERN_C_MACRO void __init_wut_stdcpp(); \
@@ -148,13 +148,13 @@ typedef struct wums_relocs_done_args_t {
     void on_fini_wut_stdcpp(){ \
         __fini_wut_stdcpp(); \
     }\
-    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_STDCPP,on_fini_wut_stdcpp);
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_STDCPP,on_fini_wut_stdcpp)
 
 #define WUMS_USE_WUT_SOCKETS() \
     __EXTERN_C_MACRO void __init_wut_socket(); \
     WUMS_HOOK_EX(WUMS_HOOK_INIT_WUT_SOCKETS,__init_wut_socket); \
     __EXTERN_C_MACRO void __fini_wut_socket(); \
-    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_SOCKETS,__fini_wut_socket);
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_SOCKETS,__fini_wut_socket)
 
 #ifdef __cplusplus
 }
