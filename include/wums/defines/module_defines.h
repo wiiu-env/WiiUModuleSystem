@@ -57,8 +57,8 @@ typedef struct module_information_single_t {
     uint8_t                         initBeforeRelocationDoneHook;
 } module_information_single_t;
 
-#define MAXIMUM_MODULES                                     8
-#define MODULE_INFORMATION_VERSION                          0x00000004
+#define MAXIMUM_MODULES                                     32
+#define MODULE_INFORMATION_VERSION                          0x00000005
 
 typedef struct module_information_t {
     uint32_t                        version;
