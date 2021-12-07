@@ -30,6 +30,7 @@ extern "C" {
 #define MAXIMUM_MODULE_PATH_NAME_LENGTH                     256
 #define MAXIMUM_EXPORT_MODULE_NAME_LENGTH                   51
 
+#define FUNCTION_SYMBOL_LIST_LENGTH                         50000
 #define DYN_LINK_RELOCATION_LIST_LENGTH                     500
 #define EXPORT_ENTRY_LIST_LENGTH                            100
 #define HOOK_ENTRY_LIST_LENGTH                              20
@@ -38,6 +39,12 @@ typedef struct hook_data_t {
     uint32_t type;
     uint32_t target;
 } hook_data_t;
+
+typedef struct module_function_symbol_data_t {
+    char* name;
+    void* address;
+    uint32_t size;
+} module_function_symbol_data_t;
 
 typedef struct module_information_single_t {
     char                            path[MAXIMUM_MODULE_PATH_NAME_LENGTH];     // Path where the module is stored
@@ -55,16 +62,20 @@ typedef struct module_information_single_t {
     uint32_t                        endAddress;
     uint8_t                         skipEntrypoint;
     uint8_t                         initBeforeRelocationDoneHook;
+    module_function_symbol_data_t * function_symbol_entries;
+    uint32_t                        number_used_function_symbols;
 } module_information_single_t;
 
 #define MAXIMUM_MODULES                                     32
-#define MODULE_INFORMATION_VERSION                          0x00000005
+#define MODULE_INFORMATION_VERSION                          0x00000006
 
 typedef struct module_information_t {
     uint32_t                        version;
     int32_t                         number_used_modules;                        // Number of used function. Maximum is MAXIMUM_MODULES
     dyn_linking_relocation_data_t   linking_data;
     relocation_trampolin_entry_t    trampolines[DYN_LINK_TRAMPOLIN_LIST_LENGTH];
+    module_function_symbol_data_t   function_symbols[FUNCTION_SYMBOL_LIST_LENGTH];
+    uint32_t                        number_used_function_symbols;
     module_information_single_t     module_data[MAXIMUM_MODULES];
 } module_information_t;
 
