@@ -2,7 +2,7 @@
  *   by Alex Chadwick
  *
  * Copyright (C) 2014, Alex Chadwick
- * Modified by Maschell, 2018-2021
+ * Modified by Maschell, 2018-2022
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,20 +32,22 @@
 extern "C" {
 #endif
 
-#define WUMS_MODULE_EXPORT_NAME(x) \
-            WUMS_META(export_name, x); \
-            WUMS_META(wum, "0.2");     \
-            WUMS_USE_WUT_MALLOC();     \
-            WUMS_USE_WUT_SOCKETS();    \
+#define WUMS_MODULE_EXPORT_NAME(x)      \
+            WUMS_META(export_name, x);  \
+            WUMS_META(wum, "0.3.1");    \
+            WUMS_USE_WUT_MALLOC();      \
+            WUMS_USE_WUT_SOCKETS();     \
             WUMS_USE_WUT_NEWLIB();      \
-            WUMS_USE_WUT_STDCPP();     \
+            WUMS_USE_WUT_STDCPP();      \
+            WUMS___INIT_WRAPPER();      \
+            WUMS___FINI_WRAPPER();      \
             WUMS_META(buildtimestamp, __DATE__ " " __TIME__)
 
 #define WUMS_MODULE_AUTHOR(x)  WUMS_META(author, x)
 #define WUMS_MODULE_VERSION(x) WUMS_META(version, x)
 #define WUMS_MODULE_LICENSE(x) WUMS_META(license, x)
 #define WUMS_MODULE_DESCRIPTION(x) WUMS_META(description, x)
-#define WUMS_MODULE_SKIP_ENTRYPOINT() WUMS_META(skipEntrypoint, "true")
+#define WUMS_MODULE_SKIP_INIT_FINI() WUMS_META(skipInitFini, "true")
 #define WUMS_MODULE_INIT_BEFORE_RELOCATION_DONE_HOOK() WUMS_META(initBeforeRelocationDoneHook, "true")
 
 #ifdef __cplusplus

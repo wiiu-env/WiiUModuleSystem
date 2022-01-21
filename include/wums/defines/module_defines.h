@@ -60,14 +60,14 @@ typedef struct module_information_single_t {
     uint32_t                        entrypoint;
     uint32_t                        startAddress;
     uint32_t                        endAddress;
-    uint8_t                         skipEntrypoint;
+    uint8_t                         skipInitFini;
     uint8_t                         initBeforeRelocationDoneHook;
     module_function_symbol_data_t * function_symbol_entries;
     uint32_t                        number_used_function_symbols;
 } module_information_single_t;
 
 #define MAXIMUM_MODULES                                     32
-#define MODULE_INFORMATION_VERSION                          0x00000006
+#define MODULE_INFORMATION_VERSION                          0x00000007
 
 typedef struct module_information_t {
     uint32_t                        version;

@@ -2,7 +2,7 @@
  *   by Alex Chadwick
  *
  * Copyright (C) 2014, Alex Chadwick
- * Modified by Maschell, 2018-2021
+ * Modified by Maschell, 2018-2022
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,9 @@ typedef enum wums_hook_type_t {
     WUMS_HOOK_FINI_WUT_DEVOPTAB,
     WUMS_HOOK_INIT_WUT_SOCKETS,
     WUMS_HOOK_FINI_WUT_SOCKETS,
+
+    WUMS_HOOK_INIT_WRAPPER,                  /* Calls __init */
+    WUMS_HOOK_FINI_WRAPPER,                  /* Calls __fini */
 
     WUMS_HOOK_INIT,
     WUMS_HOOK_APPLICATION_STARTS,
@@ -155,6 +158,20 @@ typedef struct wums_relocs_done_args_t {
     WUMS_HOOK_EX(WUMS_HOOK_INIT_WUT_SOCKETS,__init_wut_socket); \
     __EXTERN_C_MACRO void __fini_wut_socket(); \
     WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_SOCKETS,__fini_wut_socket)
+
+#define WUMS___INIT_WRAPPER() \
+    __EXTERN_C_MACRO void __init(); \
+    void __init_wrapper(){ \
+        __init(); \
+    }\
+    WUMS_HOOK_EX(WUMS_HOOK_INIT_WRAPPER,__init_wrapper);
+
+#define WUMS___FINI_WRAPPER() \
+    __EXTERN_C_MACRO void __fini(); \
+    void __fini_wrapper(){ \
+        __fini(); \
+    }\
+    WUMS_HOOK_EX(WUMS_HOOK_FINI_WRAPPER,__fini_wrapper);
 
 #ifdef __cplusplus
 }

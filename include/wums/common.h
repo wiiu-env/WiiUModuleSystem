@@ -2,7 +2,7 @@
  *   by Alex Chadwick
  *
  * Copyright (C) 2014, Alex Chadwick
- * Modified by Maschell, 2018-2021
+ * Modified by Maschell, 2018-2022
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
