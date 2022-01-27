@@ -73,7 +73,7 @@ typedef struct module_information_t {
     uint32_t                        version;
     int32_t                         number_used_modules;                        // Number of used function. Maximum is MAXIMUM_MODULES
     dyn_linking_relocation_data_t   linking_data;
-    relocation_trampolin_entry_t    trampolines[DYN_LINK_TRAMPOLIN_LIST_LENGTH];
+    relocation_trampoline_entry_t   trampolines[DYN_LINK_TRAMPOLINE_LIST_LENGTH];
     module_function_symbol_data_t   function_symbols[FUNCTION_SYMBOL_LIST_LENGTH];
     uint32_t                        number_used_function_symbols;
     module_information_single_t     module_data[MAXIMUM_MODULES];
