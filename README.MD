@@ -76,5 +76,5 @@ It's highly recommended to pin the version to the **latest date** instead of usi
 
 ## Format the code via docker
 ```bash
-docker run --rm -v ${PWD}:/src wiiuenv/clang-format:13.0.0-2 -r ./include ./libraries -i
+docker run --rm -v ${PWD}:/src wiiuenv/clang-format:13.0.0-2 -r ./include ./libraries ./example/example_module/source -i
 ```
