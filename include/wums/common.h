@@ -31,11 +31,11 @@
 extern "C" {
 #endif
 
-#define WUMS_SECTION(x) __attribute__((__section__ (".wums." x)))
+#define WUMS_SECTION(x) __attribute__((__section__(".wums." x)))
 
-#define WUMS_META(id, value) \
-    extern const char wums_meta_ ## id [] WUMS_SECTION("meta"); \
-    const char wums_meta_ ## id [] = #id "=" value
+#define WUMS_META(id, value)                                 \
+    extern const char wums_meta_##id[] WUMS_SECTION("meta"); \
+    const char wums_meta_##id[] = #id "=" value
 
 #ifdef __cplusplus
 }

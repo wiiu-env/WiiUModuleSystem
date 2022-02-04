@@ -38,21 +38,20 @@ typedef enum wums_entry_type_t {
 
 typedef struct wums_entry_t {
     wums_entry_type_t type;
-    const char *name;                       /* name of the export */
-    const void *address;                    /* pointer to the export */
+    const char *name;    /* name of the export */
+    const void *address; /* pointer to the export */
 } wums_loader_entry_t;
 
-#define WUMS_EXPORT_FUNCTION(function)   WUMS_EXPORT(WUMS_FUNCTION_EXPORT, function, function)
-#define WUMS_EXPORT_DATA(pointer)        WUMS_EXPORT(WUMS_DATA_EXPORT, pointer, &pointer)
+#define WUMS_EXPORT_FUNCTION(function) WUMS_EXPORT(WUMS_FUNCTION_EXPORT, function, function)
+#define WUMS_EXPORT_DATA(pointer)      WUMS_EXPORT(WUMS_DATA_EXPORT, pointer, &pointer)
 
-#define WUMS_EXPORT(_type, pointer, value) \
+#define WUMS_EXPORT(_type, pointer, value)                \
     extern const wums_loader_entry_t wums_entry_##pointer \
-        WUMS_SECTION("exports"); \
-    const wums_loader_entry_t wums_entry_##pointer = { \
-        .type = _type, \
-        .name = # pointer, \
-        .address = (const void*) value \
-    }
+            WUMS_SECTION("exports");                      \
+    const wums_loader_entry_t wums_entry_##pointer = {    \
+            .type    = _type,                             \
+            .name    = #pointer,                          \
+            .address = (const void *) value}
 
 #ifdef __cplusplus
 }
