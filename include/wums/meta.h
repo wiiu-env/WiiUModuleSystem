@@ -27,20 +27,33 @@
 
 #include "common.h"
 #include "hooks.h"
+#include <coreinit/debug.h>
+
+#ifdef __cplusplus
+#define __EXTERN_C_MACRO extern "C"
+#else
+#define __EXTERN_C_MACRO
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define WUMS_MODULE_EXPORT_NAME(x) \
-    WUMS_META(export_name, x);     \
-    WUMS_META(wum, "0.3.1");       \
-    WUMS_USE_WUT_MALLOC();         \
-    WUMS_USE_WUT_SOCKETS();        \
-    WUMS_USE_WUT_NEWLIB();         \
-    WUMS_USE_WUT_STDCPP();         \
-    WUMS___INIT_WRAPPER();         \
-    WUMS___FINI_WRAPPER();         \
+#define WUMS_MODULE_EXPORT_NAME(x)                          \
+    WUMS_META(export_name, x);                              \
+    WUMS_META(wum, "0.3.1");                                \
+    WUMS_USE_WUT_MALLOC();                                  \
+    WUMS_USE_WUT_SOCKETS();                                 \
+    WUMS_USE_WUT_NEWLIB();                                  \
+    WUMS_USE_WUT_STDCPP();                                  \
+    WUMS___INIT_WRAPPER();                                  \
+    WUMS___FINI_WRAPPER();                                  \
+    __EXTERN_C_MACRO void abort();                          \
+    void abort() {                                          \
+        OSFatal(x ": abort() called. Uncaught exception?"); \
+        while (1)                                           \
+            ;                                               \
+    }                                                       \
     WUMS_META(buildtimestamp, __DATE__ " " __TIME__)
 
 #define WUMS_MODULE_AUTHOR(x)                          WUMS_META(author, x)
