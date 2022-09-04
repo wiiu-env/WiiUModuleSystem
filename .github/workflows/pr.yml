@@ -22,7 +22,7 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
        name: binary
-       path: "/lib/*.a"
+       path: "lib/*.a"
   clang-format-examples:
     runs-on: ubuntu-22.04
     steps:
