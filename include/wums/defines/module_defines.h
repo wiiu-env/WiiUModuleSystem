@@ -60,12 +60,14 @@ typedef struct module_information_single_t {
     uint32_t                            number_function_symbols;
 } module_information_single_t;
 
-#define MODULE_INFORMATION_VERSION 0x0000000D
+#define MODULE_INFORMATION_VERSION 0x0000000E
 
 typedef struct module_information_t {
     uint32_t                        version;
     uint32_t                        number_modules;
     module_information_single_t *   modules;
+    uint32_t                        number_acquired_rpls;
+    uint32_t *                      acquired_rpls;
 } module_information_t;
 // clang-format on
 
