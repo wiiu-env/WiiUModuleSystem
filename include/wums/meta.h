@@ -39,9 +39,9 @@
 extern "C" {
 #endif
 
-#define WUMS_MODULE_EXPORT_NAME(x)                          \
+#define WUMS_MODULE_EXPORT_NAME_EX(x, version)              \
     WUMS_META(export_name, x);                              \
-    WUMS_META(wum, "0.3.1");                                \
+    WUMS_META(wum, version);                               \
     WUMS_USE_WUT_MALLOC();                                  \
     WUMS_USE_WUT_SOCKETS();                                 \
     WUMS_USE_WUT_NEWLIB();                                  \
@@ -55,6 +55,17 @@ extern "C" {
             ;                                               \
     }                                                       \
     WUMS_META(buildtimestamp, __DATE__ " " __TIME__)
+
+#define WUMS_LITE_MODULE_EXPORT_NAME(x) \
+    WUMS_MODULE_EXPORT_NAME_EX(x, "lite-0.1.0");
+
+#define WUMS_MODULE_EXPORT_NAME(x) \
+    WUMS_MODULE_EXPORT_NAME_EX(x, "0.3.1");
+
+#define WUMS_LITE_MODULE_AUTHOR(x)                     WUMS_META(author, x)
+#define WUMS_LITE_MODULE_VERSION(x)                    WUMS_META(version, x)
+#define WUMS_LITE_MODULE_LICENSE(x)                    WUMS_META(license, x)
+#define WUMS_LITE_MODULE_DESCRIPTION(x)                WUMS_META(description, x)
 
 #define WUMS_MODULE_AUTHOR(x)                          WUMS_META(author, x)
 #define WUMS_MODULE_VERSION(x)                         WUMS_META(version, x)

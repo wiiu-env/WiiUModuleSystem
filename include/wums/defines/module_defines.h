@@ -60,7 +60,8 @@ typedef struct module_information_single_t {
     uint32_t                            number_function_symbols;
 } module_information_single_t;
 
-#define MODULE_INFORMATION_VERSION 0x0000000E
+#define MODULE_INFORMATION_VERSION      0x0000000E
+#define MODULE_LITE_INFORMATION_VERSION 0x80000001
 
 typedef struct module_information_t {
     uint32_t                        version;
@@ -69,6 +70,11 @@ typedef struct module_information_t {
     uint32_t                        number_acquired_rpls;
     uint32_t *                      acquired_rpls;
 } module_information_t;
+
+typedef struct module_lite_information_t {
+    uint32_t                        version;
+} module_lite_information_t;
+
 // clang-format on
 
 #ifdef __cplusplus
