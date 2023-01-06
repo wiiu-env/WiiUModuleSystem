@@ -7,6 +7,14 @@ WUMS_MODULE_VERSION("0.1");
 WUMS_MODULE_LICENSE("GPL");
 WUMS_MODULE_DESCRIPTION("Just an example module");
 
+/**
+ * If this modules depends on another module (e.g. the FunctionPatcherModule) you can add a dependency to that module.
+ * This will enforce that the other module has been loaded and initialized before this module is initialized.
+ * If the other module is not loaded, this module also fails to load.
+ * Usage: WUMS_DEPENDS_ON(export_name)
+ * Example: WUMS_DEPENDS_ON(homebrew_functionpatcher)
+ */
+
 WUMS_INITIALIZE(/*wums_app_init_args_t*/ args) {
     /* Called once when the module has been loaded */
 
