@@ -37,6 +37,10 @@ extern "C" {
     extern const char wums_meta_##id[] WUMS_SECTION("meta"); \
     const char wums_meta_##id[] = #id "=" value
 
+#define WUMS_DEPENDS_ON(id)                                                \
+    extern const char wums_depends_on_##id[] WUMS_SECTION("dependencies"); \
+    const char wums_depends_on_##id[] = #id
+
 #ifdef __cplusplus
 }
 #endif

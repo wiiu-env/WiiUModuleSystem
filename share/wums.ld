@@ -13,5 +13,10 @@ SECTIONS
    .wums.hooks : {
 	  *(.wums.hooks*)
       KEEP(*(.wums.hooks*))
-   } > datamem   
+   } > datamem
+
+   .wums.dependencies : {
+	  *(.wums.dependencies*)
+      KEEP(*(.wums.dependencies*))
+   } > datamem
 }
