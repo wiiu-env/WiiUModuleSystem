@@ -41,7 +41,7 @@ extern "C" {
 
 #define WUMS_MODULE_EXPORT_NAME(x)                          \
     WUMS_META(export_name, x);                              \
-    WUMS_META(wums, "0.3.1");                               \
+    WUMS_META(wums, "0.3.2");                               \
     WUMS_USE_WUT_MALLOC();                                  \
     WUMS_USE_WUT_SOCKETS();                                 \
     WUMS_USE_WUT_NEWLIB();                                  \
