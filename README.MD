@@ -2,7 +2,7 @@
 
 # Wii U Module System
 
-This lib is required to build Modules to be loaded with the [Wii U Module System Loader](https://github.com/wiiu-env/WUMSLoader).
+This lib is designed to build modules to be loaded with the [Wii U Module System Loader](https://github.com/wiiu-env/WUMSLoader).
 
 ## Usage
 
