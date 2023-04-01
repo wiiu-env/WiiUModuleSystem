@@ -68,13 +68,13 @@ if (OSDynLoad_FindExport(sModuleHandle, FALSE, "MyCustomFunction", (void**) &sMy
 A prebuilt version of this lib can found on dockerhub. To use it for your projects, add this to your Dockerfile.
 ```Dockerfile
 [...]
-COPY --from=wiiuenv/wiiumodulesystem:[tag] /artifacts $DEVKITPRO
+COPY --from=ghcr.io/wiiu-env/wiiumodulesystem:[tag] /artifacts $DEVKITPRO
 [...]
 ```
-Replace [tag] with a tag you want to use, a list of tags can be found [here](https://hub.docker.com/r/wiiuenv/wiiumodulesystem/tags). 
+Replace [tag] with a tag you want to use, a list of tags can be found [here](https://github.com/orgs/wiiu-env/packages/container/wiiumodulesystem/versions). 
 It's highly recommended to pin the version to the **latest date** instead of using `latest`.
 
 ## Format the code via docker
 ```bash
-docker run --rm -v ${PWD}:/src wiiuenv/clang-format:13.0.0-2 -r ./include ./libraries ./example/example_module/source -i
+docker run --rm -v ${PWD}:/src ghcr.io/wiiu-env/clang-format:13.0.0-2 -r ./include ./libraries ./example/example_module/source -i
 ```
