@@ -30,7 +30,7 @@ CFLAGS	:=	-g -Wall -Werror -save-temps \
 
 CFLAGS	+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -D__WUM__
 
-CXXFLAGS	:= $(CFLAGS) -std=gnu++17
+CXXFLAGS	:= $(CFLAGS) -fno-exceptions -fno-rtti -std=gnu++20
 
 ASFLAGS	:=	-g $(MACHDEP)
 
