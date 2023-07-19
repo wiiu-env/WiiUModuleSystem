@@ -41,26 +41,30 @@ extern "C" {
 
 #define WUMS_VERSION "0.3.2"
 
-#define WUMS_MODULE_EXPORT_NAME(__module_name)                          \
-    WUMS_META(export_name, __module_name);                              \
-    WUMS_META(wums, WUMS_VERSION);                                      \
-    WUMS_USE_WUT_MALLOC();                                              \
-    WUMS_USE_WUT_SOCKETS();                                             \
-    WUMS_USE_WUT_NEWLIB();                                              \
-    WUMS_USE_WUT_STDCPP();                                              \
-    WUMS___INIT_WRAPPER();                                              \
-    WUMS___FINI_WRAPPER();                                              \
-    __EXTERN_C_MACRO void abort();                                      \
-    void abort() {                                                      \
-        OSFatal(__module_name ": abort() called. Uncaught exception?"); \
-        while (1)                                                       \
-            ;                                                           \
-    }                                                                   \
-    WUMS_META(buildtimestamp, __DATE__ " " __TIME__);                   \
-    extern const char wums_meta_info_dump[] WUMS_SECTION("meta");       \
-    const char wums_meta_info_dump[] = "(module: " __module_name ";"    \
-                                       "wums " WUMS_VERSION ";"         \
-                                       "buildtime: " __DATE__ " " __TIME__ ")"
+#define WUMS_MODULE_EXPORT_NAME(__module_name)                                                                      \
+    WUMS_META(export_name, __module_name);                                                                          \
+    WUMS_META(wums, WUMS_VERSION);                                                                                  \
+    WUMS_USE_WUT_MALLOC();                                                                                          \
+    WUMS_USE_WUT_SOCKETS();                                                                                         \
+    WUMS_USE_WUT_NEWLIB();                                                                                          \
+    WUMS_USE_WUT_STDCPP();                                                                                          \
+    WUMS___INIT_WRAPPER();                                                                                          \
+    WUMS___FINI_WRAPPER();                                                                                          \
+    __EXTERN_C_MACRO void abort();                                                                                  \
+    void abort() {                                                                                                  \
+        OSFatal(__module_name ": abort() called. Uncaught exception?");                                             \
+        while (1)                                                                                                   \
+            ;                                                                                                       \
+    }                                                                                                               \
+    WUMS_META(buildtimestamp, __DATE__ " " __TIME__);                                                               \
+    extern const char wums_meta_info_dump[] WUMS_SECTION("meta");                                                   \
+    const char wums_meta_info_dump[] = "(module: " __module_name ";"                                                \
+                                       "wums " WUMS_VERSION ";"                                                     \
+                                       "buildtime: " __DATE__ " " __TIME__ ")";                                     \
+    extern const char wums_meta_info_linking_order[] WUMS_SECTION("meta");                                          \
+    const char wums_meta_info_linking_order[] = "Loading module \"" __module_name "\" failed.\n"                    \
+                                                "Function \"wut_get_thread_specific\" returned unexpected value.\n" \
+                                                "Please check linking order (expected \"-lwums -lwut\")";
 
 #define WUMS_MODULE_AUTHOR(x)                          WUMS_META(author, x)
 #define WUMS_MODULE_VERSION(x)                         WUMS_META(version, x)
