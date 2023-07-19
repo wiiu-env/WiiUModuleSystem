@@ -43,6 +43,8 @@ void *wums_get_thread_specific(__wut_thread_specific_id id) {
             return thread->reserved[3];
         } else if (id == WUT_THREAD_SPECIFIC_1) {
             return thread->reserved[4];
+        } else if ((uint32_t) id == 0x13371337) { // Mechanism to detect if the function was overridden properly
+            return (void *) 0x42424242;
         } else {
             OSReport("[%s] wums_get_thread_specific: invalid id\n", wums_meta_info_dump);
             OSFatal("wums_get_thread_specific: invalid id");

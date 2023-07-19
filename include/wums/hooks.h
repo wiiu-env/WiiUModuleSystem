@@ -165,11 +165,22 @@ typedef struct wums_relocs_done_args_t {
     __EXTERN_C_MACRO void __fini_wut_socket();                   \
     WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_SOCKETS, __fini_wut_socket)
 
-#define WUMS___INIT_WRAPPER()       \
-    __EXTERN_C_MACRO void __init(); \
-    void __init_wrapper() {         \
-        __init();                   \
-    }                               \
+#ifdef __cplusplus
+extern "C" uint32_t __attribute__((weak)) wut_get_thread_specific(int id);
+extern "C" const char wums_meta_info_linking_order[];
+#else
+extern uint32_t __attribute__((weak)) wut_get_thread_specific(int id);
+extern const char wums_meta_info_linking_order[];
+#endif
+
+#define WUMS___INIT_WRAPPER()                                    \
+    __EXTERN_C_MACRO void __init();                              \
+    void __init_wrapper() {                                      \
+        if (wut_get_thread_specific(0x13371337) != 0x42424242) { \
+            OSFatal(wums_meta_info_linking_order);               \
+        }                                                        \
+        __init();                                                \
+    }                                                            \
     WUMS_HOOK_EX(WUMS_HOOK_INIT_WRAPPER, __init_wrapper);
 
 #define WUMS___FINI_WRAPPER()       \
