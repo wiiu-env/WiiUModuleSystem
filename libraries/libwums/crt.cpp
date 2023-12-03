@@ -1,5 +1,7 @@
 #include "wums_reent.h"
 #include "wums_thread_specific.h"
+#include <cstdio>
+#include <cstring>
 
 extern "C" void OSFatal(const char *);
 
@@ -51,4 +53,60 @@ extern "C" void *__attribute__((weak)) wut_get_thread_specific(__wut_thread_spec
 
 void *wut_get_thread_specific(__wut_thread_specific_id id) {
     return wums_get_thread_specific(id);
+}
+
+extern "C" const char wums_meta_module_name[];
+extern "C" void __attribute__((weak)) abort(void);
+extern "C" void __attribute__((weak)) __assert_func(const char *file, int line, const char *func, const char *failedexpr);
+extern "C" void __attribute__((weak)) __assert(const char *file, int line, const char *failedexpr);
+
+void __attribute__((weak))
+abort(void) {
+    char buffer[512] = {};
+    strcat(buffer, "Wii U Module System (module: \"");
+    strcat(buffer, wums_meta_module_name);
+    strcat(buffer, "\"):\n Abort called. Uncaught exception?");
+    OSFatal(buffer);
+    /* NOTREACHED */
+    while (1)
+        ;
+}
+
+void __attribute__((weak))
+__assert_func(const char *file,
+              int line,
+              const char *func,
+              const char *failedexpr) {
+    char tmp[512]    = {};
+    char buffer[512] = {};
+
+    snprintf(tmp, sizeof(tmp), "Wii U Module System (module: \"%s\"):\n\n"
+                               "assertion \"%s\" failed:\n\n"
+                               "file \"%s\", line %d%s%s",
+             wums_meta_module_name, failedexpr, file, line, func ? ", function: " : "", func ? func : "");
+
+    // make sure to add a \n every 64 characters to fit on the DRC screen.
+    char *target_ptr = buffer;
+    int i = 0, j = 0, lineLength = 0;
+    while (tmp[i] != '\0' && j < (int) sizeof(buffer) - 2) {
+        if (tmp[i] == '\n') {
+            lineLength = 0;
+        } else if (lineLength >= 64) {
+            target_ptr[j++] = '\n';
+            lineLength      = 0;
+        }
+        target_ptr[j++] = tmp[i++];
+        lineLength++;
+    }
+
+    OSFatal(buffer);
+    /* NOTREACHED */
+}
+
+void __attribute__((weak))
+__assert(const char *file,
+         int line,
+         const char *failedexpr) {
+    __assert_func(file, line, NULL, failedexpr);
+    /* NOTREACHED */
 }

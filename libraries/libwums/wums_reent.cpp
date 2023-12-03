@@ -9,14 +9,14 @@ typedef uint32_t OSThread;
 
 extern const char wums_meta_info_dump[];
 
-extern void OSFatal(const char *);
-extern void OSReport(const char *, ...);
+extern "C" void OSFatal(const char *);
+extern "C" void OSReport(const char *, ...);
 
-extern OSThread *OSGetCurrentThread();
+extern "C" OSThread *OSGetCurrentThread();
 
 typedef void (*OSThreadCleanupCallbackFn)(OSThread *thread, void *stack);
 
-OSThreadCleanupCallbackFn
+extern "C" OSThreadCleanupCallbackFn
 OSSetThreadCleanupCallback(OSThread *thread,
                            OSThreadCleanupCallbackFn callback);
 

@@ -50,13 +50,9 @@ extern "C" {
     WUMS_USE_WUT_STDCPP();                                                                                          \
     WUMS___INIT_WRAPPER();                                                                                          \
     WUMS___FINI_WRAPPER();                                                                                          \
-    __EXTERN_C_MACRO void abort();                                                                                  \
-    void abort() {                                                                                                  \
-        OSFatal(__module_name ": abort() called. Uncaught exception?");                                             \
-        while (1)                                                                                                   \
-            ;                                                                                                       \
-    }                                                                                                               \
     WUMS_META(buildtimestamp, __DATE__ " " __TIME__);                                                               \
+    extern const char wums_meta_module_name[] WUMS_SECTION("meta");                                                 \
+    const char wums_meta_module_name[] = __module_name;                                                             \
     extern const char wums_meta_info_dump[] WUMS_SECTION("meta");                                                   \
     const char wums_meta_info_dump[] = "(module: " __module_name ";"                                                \
                                        "wums " WUMS_VERSION ";"                                                     \
