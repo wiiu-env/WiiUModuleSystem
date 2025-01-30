@@ -59,7 +59,11 @@ typedef enum wums_hook_type_t {
     WUMS_HOOK_RELOCATIONS_DONE,
     WUMS_HOOK_APPLICATION_REQUESTS_EXIT,
     // Introduced in 0.3.2
-    WUMS_HOOK_DEINIT
+    WUMS_HOOK_DEINIT,
+    // Introduced in 0.3.3
+    WUMS_HOOK_ALL_APPLICATION_STARTS_DONE,
+    WUMS_HOOK_ALL_APPLICATION_ENDS_DONE,
+    WUMS_HOOK_ALL_APPLICATION_REQUESTS_EXIT_DONE,
 } wums_hook_type_t;
 
 typedef struct wums_hook_t {
@@ -104,6 +108,21 @@ typedef struct wums_relocs_done_args_t {
     void __wums_relocations_done(wums_relocs_done_args_t);             \
     WUMS_HOOK_EX(WUMS_HOOK_RELOCATIONS_DONE, __wums_relocations_done); \
     void __wums_relocations_done(wums_relocs_done_args_t myargs)
+
+#define WUMS_ALL_APPLICATION_STARTS_DONE()                                      \
+    void __wums_all_start_done(void);                                           \
+    WUMS_HOOK_EX(WUMS_HOOK_ALL_APPLICATION_STARTS_DONE, __wums_all_start_done); \
+    void __wums_all_start_done()
+
+#define WUMS_ALL_APPLICATION_REQUESTS_EXIT_DONE()                                              \
+    void __wums_all_requests_exit_done(void);                                                  \
+    WUMS_HOOK_EX(WUMS_HOOK_ALL_APPLICATION_REQUESTS_EXIT_DONE, __wums_all_requests_exit_done); \
+    void __wums_all_requests_exit_done()
+
+#define WUMS_ALL_APPLICATION_ENDS_DONE()                                     \
+    void __wums_all_ends_done(void);                                         \
+    WUMS_HOOK_EX(WUMS_HOOK_ALL_APPLICATION_ENDS_DONE, __wums_all_ends_done); \
+    void __wums_all_ends_done()
 
 #ifdef __cplusplus
 #define __EXTERN_C_MACRO extern "C"
