@@ -64,7 +64,18 @@ typedef enum wums_hook_type_t {
     WUMS_HOOK_ALL_APPLICATION_STARTS_DONE,
     WUMS_HOOK_ALL_APPLICATION_ENDS_DONE,
     WUMS_HOOK_ALL_APPLICATION_REQUESTS_EXIT_DONE,
+    // Introduced in 0.3.4
+    WUMS_HOOK_GET_CUSTOM_RPL_ALLOCATOR,  // for internal usage only
+    WUMS_HOOK_CLEAR_ALLOCATED_RPL_MEMORY // for internal usage only
 } wums_hook_type_t;
+
+typedef uint32_t (*WUMSRPLAllocatorAllocFn)(int32_t size, int32_t align, void **outAddr);
+typedef void (*WUMSRPLAllocatorFreeFn)(void *addr);
+
+typedef struct wums_internal_custom_rpl_allocator_t {
+    WUMSRPLAllocatorAllocFn allocFn;
+    WUMSRPLAllocatorFreeFn freeFn;
+} wums_internal_custom_rpl_allocator_t;
 
 typedef struct wums_hook_t {
     wums_hook_type_t type; /*  Defines the type of the hook */
@@ -123,6 +134,16 @@ typedef struct wums_relocs_done_args_t {
     void __wums_all_ends_done(void);                                         \
     WUMS_HOOK_EX(WUMS_HOOK_ALL_APPLICATION_ENDS_DONE, __wums_all_ends_done); \
     void __wums_all_ends_done()
+
+#define WUMS_INTERNAL_GET_CUSTOM_RPL_ALLOCATOR()                                       \
+    wums_internal_custom_rpl_allocator_t __wums_get_custom_rpl_allocator(void);        \
+    WUMS_HOOK_EX(WUMS_HOOK_GET_CUSTOM_RPL_ALLOCATOR, __wums_get_custom_rpl_allocator); \
+    wums_internal_custom_rpl_allocator_t __wums_get_custom_rpl_allocator()
+
+#define WUMS_INTERNAL_HOOK_CLEAR_ALLOCATED_RPL_MEMORY()                                    \
+    void __wums_clear_allocated_rpl_memory(void);                                          \
+    WUMS_HOOK_EX(WUMS_HOOK_CLEAR_ALLOCATED_RPL_MEMORY, __wums_clear_allocated_rpl_memory); \
+    void __wums_clear_allocated_rpl_memory()
 
 #ifdef __cplusplus
 #define __EXTERN_C_MACRO extern "C"
