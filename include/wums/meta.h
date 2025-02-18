@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-#define WUMS_VERSION "0.3.3"
+#define WUMS_VERSION "0.3.4"
 
 #define WUMS_MODULE_EXPORT_NAME(__module_name)                                                                      \
     WUMS_META(export_name, __module_name);                                                                          \
