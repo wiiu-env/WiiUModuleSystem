@@ -3,7 +3,7 @@ include $(TOPDIR)/share/wums_rules
 
 export WUMS_MAJOR	:=	0
 export WUMS_MINOR	:=	3
-export WUMS_PATCH	:=	2
+export WUMS_PATCH	:=	5
 
 VERSION	:=	$(WUMS_MAJOR).$(WUMS_MINOR).$(WUMS_PATCH)
 

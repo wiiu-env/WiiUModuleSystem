@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-#define WUMS_VERSION "0.3.4"
+#define WUMS_VERSION "0.3.5"
 
 #define WUMS_MODULE_EXPORT_NAME(__module_name)                                                                      \
     WUMS_META(export_name, __module_name);                                                                          \
@@ -47,7 +47,7 @@ extern "C" {
     WUMS_USE_WUT_MALLOC();                                                                                          \
     WUMS_USE_WUT_SOCKETS();                                                                                         \
     WUMS_USE_WUT_NEWLIB();                                                                                          \
-    WUMS_USE_WUT_STDCPP();                                                                                          \
+    WUMS_USE_WUT_THREAD();                                                                                          \
     WUMS___INIT_WRAPPER();                                                                                          \
     WUMS___FINI_WRAPPER();                                                                                          \
     WUMS_META(buildtimestamp, __DATE__ " " __TIME__);                                                               \
