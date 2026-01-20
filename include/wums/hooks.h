@@ -65,8 +65,10 @@ typedef enum wums_hook_type_t {
     WUMS_HOOK_ALL_APPLICATION_ENDS_DONE,
     WUMS_HOOK_ALL_APPLICATION_REQUESTS_EXIT_DONE,
     // Introduced in 0.3.4
-    WUMS_HOOK_GET_CUSTOM_RPL_ALLOCATOR,  // for internal usage only
-    WUMS_HOOK_CLEAR_ALLOCATED_RPL_MEMORY // for internal usage only
+    WUMS_HOOK_GET_CUSTOM_RPL_ALLOCATOR,   // for internal usage only
+    WUMS_HOOK_CLEAR_ALLOCATED_RPL_MEMORY, // for internal usage only
+    // Introduced in 0.3.5
+    WUMS_HOOK_INIT_WUT_THREAD // for internal usage only
 } wums_hook_type_t;
 
 typedef uint32_t (*WUMSRPLAllocatorAllocFn)(int32_t size, int32_t align, void **outAddr);
@@ -187,17 +189,12 @@ typedef struct wums_relocs_done_args_t {
     }                                                            \
     WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_NEWLIB, on_fini_wut_newlib)
 
-#define WUMS_USE_WUT_STDCPP()                                    \
-    __EXTERN_C_MACRO void __init_wut_stdcpp();                   \
-    void on_init_wut_stdcpp() {                                  \
-        __init_wut_stdcpp();                                     \
-    }                                                            \
-    WUMS_HOOK_EX(WUMS_HOOK_INIT_WUT_STDCPP, on_init_wut_stdcpp); \
-    __EXTERN_C_MACRO void __fini_wut_stdcpp();                   \
-    void on_fini_wut_stdcpp() {                                  \
-        __fini_wut_stdcpp();                                     \
-    }                                                            \
-    WUMS_HOOK_EX(WUMS_HOOK_FINI_WUT_STDCPP, on_fini_wut_stdcpp)
+#define WUMS_USE_WUT_THREAD()                  \
+    __EXTERN_C_MACRO void __init_wut_thread(); \
+    void on_init_wut_thread() {                \
+        __init_wut_thread();                   \
+    }                                          \
+    WUMS_HOOK_EX(WUMS_HOOK_INIT_WUT_THREAD, on_init_wut_thread);
 
 #define WUMS_USE_WUT_SOCKETS()                                   \
     __EXTERN_C_MACRO void __init_wut_socket();                   \
