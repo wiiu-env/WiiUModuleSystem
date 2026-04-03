@@ -47,10 +47,10 @@ typedef struct module_information_single_t {
     uint32_t                            number_export_entries;
     hook_data_t *                       hook_entries;
     uint32_t                            number_hook_entries;
-    uint32_t                            bssAddr;
-    uint32_t                            bssSize;
-    uint32_t                            sbssAddr;
-    uint32_t                            sbssSize;
+    uint32_t                            bssAddr; // deprecated
+    uint32_t                            bssSize; // deprecated
+    uint32_t                            sbssAddr; // deprecated
+    uint32_t                            sbssSize; // deprecated
     uint32_t                            startAddress;
     uint32_t                            endAddress;
     uint32_t                            entrypoint;
