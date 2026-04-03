@@ -21,9 +21,9 @@ void wums_set_thread_specific(__wut_thread_specific_id id, void *value) {
                  : "=r"(thread)); // OSGetCurrentThread()
     if (thread != nullptr) {
         if (id == WUT_THREAD_SPECIFIC_0) {
-            thread->reserved[3] = value;
+            thread->reserved[1] = value;
         } else if (id == WUT_THREAD_SPECIFIC_1) {
-            thread->reserved[4] = value;
+            thread->reserved[2] = value;
         } else {
             OSReport("[%s] wums_set_thread_specific: invalid id\n", wums_meta_info_dump);
             OSFatal("wut_set_thread_specific: invalid id");
@@ -40,9 +40,9 @@ void *wums_get_thread_specific(__wut_thread_specific_id id) {
                  : "=r"(thread)); // OSGetCurrentThread()
     if (thread != nullptr) {
         if (id == WUT_THREAD_SPECIFIC_0) {
-            return thread->reserved[3];
+            return thread->reserved[1];
         } else if (id == WUT_THREAD_SPECIFIC_1) {
-            return thread->reserved[4];
+            return thread->reserved[2];
         } else if ((uint32_t) id == 0x13371337) { // Mechanism to detect if the function was overridden properly
             return (void *) 0x42424242;
         } else {
