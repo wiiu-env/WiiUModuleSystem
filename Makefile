@@ -102,10 +102,10 @@ lib:
 	@[ -d $@ ] || mkdir -p $@
 
 release:
-	@[ -d $@ ] || mkdir -p $@
+	@$(shell [ ! -d 'release' ] && mkdir -p 'release')
 
 debug:
-	@[ -d $@ ] || mkdir -p $@
+	@$(shell [ ! -d 'debug' ] && mkdir -p 'debug')
 
 lib/libwums.a : lib release $(SOURCES) $(INCLUDES)
 	@$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ \
