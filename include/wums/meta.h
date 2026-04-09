@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-#define WUMS_VERSION "0.3.5"
+#define WUMS_VERSION "0.3.6"
 
 #define WUMS_MODULE_EXPORT_NAME(__module_name)                                                                      \
     WUMS_META(export_name, __module_name);                                                                          \
@@ -50,6 +50,7 @@ extern "C" {
     WUMS_USE_WUT_THREAD();                                                                                          \
     WUMS___INIT_WRAPPER();                                                                                          \
     WUMS___FINI_WRAPPER();                                                                                          \
+    WUMS_INIT_REENT_FUNCTIONS();                                                                                    \
     WUMS_META(buildtimestamp, __DATE__ " " __TIME__);                                                               \
     extern const char wums_meta_module_name[] WUMS_SECTION("meta");                                                 \
     const char wums_meta_module_name[] = __module_name;                                                             \
