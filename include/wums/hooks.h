@@ -27,6 +27,7 @@
 
 #include "common.h"
 #include "defines/module_defines.h"
+#include "reent_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,7 +69,9 @@ typedef enum wums_hook_type_t {
     WUMS_HOOK_GET_CUSTOM_RPL_ALLOCATOR,   // for internal usage only
     WUMS_HOOK_CLEAR_ALLOCATED_RPL_MEMORY, // for internal usage only
     // Introduced in 0.3.5
-    WUMS_HOOK_INIT_WUT_THREAD // for internal usage only
+    WUMS_HOOK_INIT_WUT_THREAD, // for internal usage only
+    // Introduced in 0.3.6
+    WUMS_HOOK_INIT_REENT_FUNCTIONS // for internal usage only
 } wums_hook_type_t;
 
 typedef uint32_t (*WUMSRPLAllocatorAllocFn)(int32_t size, int32_t align, void **outAddr);
@@ -195,6 +198,14 @@ typedef struct wums_relocs_done_args_t {
         __init_wut_thread();                   \
     }                                          \
     WUMS_HOOK_EX(WUMS_HOOK_INIT_WUT_THREAD, on_init_wut_thread);
+
+#define WUMS_INIT_REENT_FUNCTIONS()                                                  \
+    __EXTERN_C_MACRO void WUMSReentAPI_InitInternal(wums_loader_init_reent_args_t_); \
+    void wums_init_reent_functions(wums_loader_init_reent_args_t_ args);             \
+    WUMS_HOOK_EX(WUMS_HOOK_INIT_REENT_FUNCTIONS, wums_init_reent_functions);         \
+    void wums_init_reent_functions(wums_loader_init_reent_args_t_ args) {            \
+        return WUMSReentAPI_InitInternal(args);                                      \
+    }
 
 #define WUMS_USE_WUT_SOCKETS()                                   \
     __EXTERN_C_MACRO void __init_wut_socket();                   \

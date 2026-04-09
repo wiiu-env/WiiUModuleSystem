@@ -1,175 +1,105 @@
 #include "wums_reent.h"
-#include "wums_thread_specific.h"
-#include <cstring>
-#include <stdint.h>
+
+#include "wums/hooks.h"
+#include "wums/reent_internal.h"
+#include "wums/wums_debug.h"
+
+extern "C" void OSFatal(const char *format, ...);
+extern "C" void *OSGetCurrentThread();
+
 #include <stdlib.h>
-#include <wums/wums_debug.h>
 
-#define __WUMS_CONTEXT_THREAD_SPECIFIC_ID WUT_THREAD_SPECIFIC_0
-#define WUMS_REENT_ALLOC_SENTINEL         ((__wums_reent_node *) 0xFFFFFFFF)
-
-extern "C" __attribute__((weak)) void wut_set_thread_specific(__wut_thread_specific_id id, void *value);
-extern "C" __attribute__((weak)) void *wut_get_thread_specific(__wut_thread_specific_id);
-
-typedef uint32_t OSThread;
-
-extern "C" void OSFatal(const char *);
-extern "C" void OSReport(const char *, ...);
-
-extern "C" OSThread *OSGetCurrentThread();
-
-typedef void (*OSThreadCleanupCallbackFn)(OSThread *thread, void *stack);
-
-extern "C" OSThreadCleanupCallbackFn
-OSSetThreadCleanupCallback(OSThread *thread,
-                           OSThreadCleanupCallbackFn callback);
-
-#define WUMS_REENT_NODE_VERSION 1
-#define WUMS_REENT_NODE_MAGIC   0x57554D53 // WUMS
-static const int sReentModuleId = 0;
-
-struct __wums_reent_node {
-    // FIXED HEADER (Never move or change these offsets!)
-    uint32_t magic; // Guarantees this is a __wums_reent_node
-    uint32_t version;
-    __wums_reent_node *next;
-
-    // Node Version 1 Payload
-    const void *moduleId;
-    void *reentPtr;
-    void (*cleanupFn)(__wums_reent_node *);
-    OSThreadCleanupCallbackFn savedCleanup;
+struct wums_loader_init_reent_args_t {
+    WUMSReent_GetReentContext get_context_ptr       = nullptr;
+    WUMSReent_SetSentinel set_sentinel_ptr          = nullptr;
+    WUMSReent_RestoreHead restore_head_ptr          = nullptr;
+    WUMSReent_AddReentContext add_reent_context_ptr = nullptr;
 };
 
-static void reclaim_reent_trampoline(__wums_reent_node *node) {
-    WUMS_DEBUG_REPORT("reclaim_reent_trampoline: Destroying node %p (reent: %p)\n", node, node->reentPtr);
+static wums_loader_init_reent_args_t __internal_functions = {};
 
-    if (node->reentPtr) {
-        _reclaim_reent(static_cast<_reent *>(node->reentPtr));
-        free(node->reentPtr);
+void WUMSReentAPI_InitInternal(wums_loader_init_reent_args_t_ args) {
+    if (args.version > WUMS_REENT_CUR_API_VERSION) {
+        OSFatal("Incompatible reent api version");
+        return;
     }
-    free(node);
+    WUMS_DEBUG_REPORT("WUMSReentAPI_InitInternal: Initializing reent module\n");
+
+    __internal_functions.get_context_ptr       = args.get_context_ptr;
+    __internal_functions.set_sentinel_ptr      = args.set_sentinel_ptr;
+    __internal_functions.add_reent_context_ptr = args.add_reent_context_ptr;
+    __internal_functions.restore_head_ptr      = args.restore_head_ptr;
 }
 
-static void __wums_thread_cleanup(OSThread *thread, void *stack) {
-    auto *head = static_cast<__wums_reent_node *>(wut_get_thread_specific(__WUMS_CONTEXT_THREAD_SPECIFIC_ID));
+// use variable in the .data section as unique module id
+static const int sReentModuleId = 0;
 
-    if (!head || head == WUMS_REENT_ALLOC_SENTINEL) {
-        return;
-    }
+void *wums_backend_get_context(const void *id, wums_loader_init_reent_errors_t_ *outError) {
+    return __internal_functions.get_context_ptr(id, outError);
+}
 
-    if (head->magic != WUMS_REENT_NODE_MAGIC) {
-        WUMS_DEBUG_WARN("__wums_thread_cleanup: Unexpected node magic word: %08X (expected %08X).\n", head->magic, WUMS_REENT_NODE_MAGIC);
-        return;
-    }
+void *wums_backend_set_sentinel() {
+    return __internal_functions.set_sentinel_ptr();
+}
 
-    WUMS_DEBUG_REPORT("__wums_thread_cleanup: Triggered for thread %p\n", thread);
+void wums_backend_restore_head(void *head) {
+    __internal_functions.restore_head_ptr(head);
+}
 
-    OSThreadCleanupCallbackFn savedCleanup = nullptr;
-    if (head->version >= 1) {
-        savedCleanup = head->savedCleanup;
-    }
+bool wums_backend_register_context(const void *moduleId, void *reentPtr, void (*cleanupFn)(void *), void *oldHead) {
+    return __internal_functions.add_reent_context_ptr(moduleId, reentPtr, cleanupFn, oldHead);
+}
 
-    // Set to effective global during free to prevent malloc re-entrancy loops
-    wut_set_thread_specific(__WUMS_CONTEXT_THREAD_SPECIFIC_ID, WUMS_REENT_ALLOC_SENTINEL);
+static void reclaim_reent_trampoline(void *payload) {
+    WUMS_DEBUG_REPORT("reclaim_reent_trampoline: Destroying reent payload: %p\n", payload);
 
-    // Safely iterate the ABI-stable list.
-    auto *curr = head;
-    while (curr) {
-        // Read the "next" pointer BEFORE destroying the current node.
-        __wums_reent_node *next = curr->next;
-
-        // Trigger the self-destruct sequence. Frees curr
-        if (curr->cleanupFn) {
-            curr->cleanupFn(curr);
-        }
-
-        curr = next;
-    }
-
-    wut_set_thread_specific(__WUMS_CONTEXT_THREAD_SPECIFIC_ID, nullptr);
-
-    if (savedCleanup) {
-        WUMS_DEBUG_REPORT("__wums_thread_cleanup: Chaining to saved cleanup for thread %p\n", thread);
-        savedCleanup(thread, stack);
+    if (payload) {
+        auto *reentPtr = static_cast<_reent *>(payload);
+        _reclaim_reent(reentPtr);
+        free(reentPtr);
     }
 }
 
 struct _reent *__wums_getreent() {
-    if (!wut_get_thread_specific || !wut_set_thread_specific || OSGetCurrentThread() == nullptr) {
+    if (!OSGetCurrentThread()) {
         return _GLOBAL_REENT;
     }
-
-    auto head = static_cast<__wums_reent_node *>(wut_get_thread_specific(__WUMS_CONTEXT_THREAD_SPECIFIC_ID));
-
-    if (head == WUMS_REENT_ALLOC_SENTINEL) {
-        return _GLOBAL_REENT;
+    wums_loader_init_reent_errors_t_ error = WUMSReent_ERROR_NONE;
+    if (void *existingCtx = wums_backend_get_context(&sReentModuleId, &error)) {
+        return static_cast<_reent *>(existingCtx);
+    }
+    switch (error) {
+        case WUMSReent_ERROR_GLOBAL_REENT_REQUESTED:
+        case WUMSReent_ERROR_NO_THREAD:
+            return _GLOBAL_REENT;
+        case WUMSReent_ERROR_NONE:
+            break;
     }
 
-    if (head && head->magic != WUMS_REENT_NODE_MAGIC) {
-        WUMS_DEBUG_WARN("__wums_getreent: Unexpected node magic word: %08X (expected %08X).\n", head->magic, WUMS_REENT_NODE_MAGIC);
-        return _GLOBAL_REENT;
-    }
-
-    // Check for already allocated reent ptr.
-    // (Intentionally not logging here to prevent console spam on the fast path)
-    const __wums_reent_node *curr = head;
-    while (curr) {
-        // Use a memory address as a unique id
-        if (curr->version >= 1 && curr->moduleId == &sReentModuleId) {
-            return static_cast<_reent *>(curr->reentPtr);
-        }
-        curr = curr->next;
-    }
-
-    WUMS_DEBUG_REPORT("__wums_getreent: Allocating new context for thread %p\n", OSGetCurrentThread());
-
-    // If not found allocate a new for THIS module.
-    // Temporarily effectively use global reent during context allocation
-    wut_set_thread_specific(__WUMS_CONTEXT_THREAD_SPECIFIC_ID, WUMS_REENT_ALLOC_SENTINEL);
-
-    auto *newNode  = static_cast<__wums_reent_node *>(malloc(sizeof(__wums_reent_node)));
+    auto *oldHead  = wums_backend_set_sentinel();
     auto *newReent = static_cast<struct _reent *>(malloc(sizeof(struct _reent)));
-
-    if (!newNode || !newReent) {
-        WUMS_DEBUG_WARN("__wums_getreent: Failed to allocate context! Falling back to _GLOBAL_REENT.\n");
-        if (newNode) {
-            free(newNode);
-        }
-        if (newReent) {
-            free(newReent);
-        }
-        // reset on error
-        wut_set_thread_specific(__WUMS_CONTEXT_THREAD_SPECIFIC_ID, head);
+    if (!newReent) {
+        wums_backend_restore_head(oldHead);
         return _GLOBAL_REENT;
     }
+
+    WUMS_DEBUG_REPORT("Allocated context! for thread %p: %p\n", OSGetCurrentThread(), newReent);
 
     _REENT_INIT_PTR(newReent);
 
-    newNode->magic        = WUMS_REENT_NODE_MAGIC;
-    newNode->version      = WUMS_REENT_NODE_VERSION;
-    newNode->next         = head;
-    newNode->moduleId     = &sReentModuleId;
-    newNode->reentPtr     = newReent;
-    newNode->cleanupFn    = reclaim_reent_trampoline;
-    newNode->savedCleanup = nullptr;
+    bool result = wums_backend_register_context(
+            &sReentModuleId,
+            newReent,
+            reclaim_reent_trampoline,
+            oldHead);
 
-    auto oldHead = head;
-
-    // Hook cleanup logic
-    if (oldHead == nullptr) {
-        WUMS_DEBUG_REPORT("__wums_getreent: Hooking OSSetThreadCleanupCallback for thread %p\n", OSGetCurrentThread());
-        newNode->savedCleanup = OSSetThreadCleanupCallback(OSGetCurrentThread(), &__wums_thread_cleanup);
-    } else {
-        WUMS_DEBUG_REPORT("__wums_getreent: Prepending to existing list for thread %p\n", OSGetCurrentThread());
-        // We prepend, so we must inherit the saved cleanup from the previous head
-        if (oldHead->version >= 1) {
-            newNode->savedCleanup = oldHead->savedCleanup;
-            oldHead->savedCleanup = nullptr;
-        }
+    if (!result) {
+        WUMS_DEBUG_WARN("Failed to register context for thread %p\n", OSGetCurrentThread());
+        _reclaim_reent(newReent);
+        free(newReent);
+        wums_backend_restore_head(oldHead);
+        return _GLOBAL_REENT;
     }
-
-    wut_set_thread_specific(__WUMS_CONTEXT_THREAD_SPECIFIC_ID, newNode);
 
     return newReent;
 }
