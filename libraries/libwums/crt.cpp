@@ -1,8 +1,10 @@
+#include "wums/wums_debug.h"
 #include "wums_reent.h"
-#include "wums_thread_specific.h"
+
 #include <cstdio>
 #include <cstring>
 
+extern "C" void OSFatal(const char *);
 extern "C" void OSFatal(const char *);
 
 int main(int argc, char **argv) {
@@ -43,16 +45,22 @@ struct _reent *__getreent(void) {
     return __wums_getreent();
 }
 
-extern "C" void __attribute__((weak)) wut_set_thread_specific(__wut_thread_specific_id id, void *value);
-
-void wut_set_thread_specific(__wut_thread_specific_id id, void *value) {
-    return wums_set_thread_specific(id, value);
-}
+typedef enum __wut_thread_specific_id {
+    WUT_THREAD_SPECIFIC_0 = 0,
+    WUT_THREAD_SPECIFIC_1 = 1,
+} __wut_thread_specific_id;
 
 extern "C" void *__attribute__((weak)) wut_get_thread_specific(__wut_thread_specific_id id);
 
 void *wut_get_thread_specific(__wut_thread_specific_id id) {
-    return wums_get_thread_specific(id);
+    if ((uint32_t) id == 0x13371337) { // Mechanism to detect if the function was overridden properly
+        return (void *) 0x42424242;
+    }
+
+    WUMS_DEBUG_WARN("wums_get_thread_specific: NOT SUPPORTED\n");
+    OSFatal("wums_get_thread_specific: NOT SUPPORTED\n");
+
+    return nullptr;
 }
 
 extern "C" const char wums_meta_module_name[];
@@ -100,6 +108,8 @@ __assert_func(const char *file,
     }
 
     OSFatal(buffer);
+    while (true)
+        ;
     /* NOTREACHED */
 }
 
