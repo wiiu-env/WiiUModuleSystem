@@ -4,15 +4,22 @@
 #include "wums/reent_internal.h"
 #include "wums/wums_debug.h"
 
+#include <stdlib.h>
+
 extern "C" void OSFatal(const char *format, ...);
 extern "C" void *OSGetCurrentThread();
 
-#include <stdlib.h>
+typedef void *(*MEMAllocFromDefaultHeapFn)(uint32_t size);
+typedef void *(*MEMAllocFromDefaultHeapExFn)(uint32_t size, int32_t alignment);
+typedef void (*MEMFreeToDefaultHeapFn)(void *ptr);
+
+extern MEMAllocFromDefaultHeapFn MEMAllocFromDefaultHeap;
+extern MEMAllocFromDefaultHeapExFn MEMAllocFromDefaultHeapEx;
+extern MEMFreeToDefaultHeapFn MEMFreeToDefaultHeap;
+
 
 struct wums_loader_init_reent_args_t {
     WUMSReent_GetReentContext get_context_ptr       = nullptr;
-    WUMSReent_SetSentinel set_sentinel_ptr          = nullptr;
-    WUMSReent_RestoreHead restore_head_ptr          = nullptr;
     WUMSReent_AddReentContext add_reent_context_ptr = nullptr;
 };
 
@@ -26,28 +33,18 @@ void WUMSReentAPI_InitInternal(wums_loader_init_reent_args_t_ args) {
     WUMS_DEBUG_REPORT("WUMSReentAPI_InitInternal: Initializing reent module\n");
 
     __internal_functions.get_context_ptr       = args.get_context_ptr;
-    __internal_functions.set_sentinel_ptr      = args.set_sentinel_ptr;
     __internal_functions.add_reent_context_ptr = args.add_reent_context_ptr;
-    __internal_functions.restore_head_ptr      = args.restore_head_ptr;
 }
 
 // use variable in the .data section as unique module id
 static const int sReentModuleId = 0;
 
-void *wums_backend_get_context(const void *id, wums_loader_init_reent_errors_t_ *outError) {
-    return __internal_functions.get_context_ptr(id, outError);
+bool wums_backend_get_context(const void *id, void **outPtr) {
+    return __internal_functions.get_context_ptr(id, outPtr);
 }
 
-void *wums_backend_set_sentinel() {
-    return __internal_functions.set_sentinel_ptr();
-}
-
-void wums_backend_restore_head(void *head) {
-    __internal_functions.restore_head_ptr(head);
-}
-
-bool wums_backend_register_context(const void *moduleId, void *reentPtr, void (*cleanupFn)(void *), void *oldHead) {
-    return __internal_functions.add_reent_context_ptr(moduleId, reentPtr, cleanupFn, oldHead);
+bool wums_backend_register_context(const void *moduleId, void *reentPtr, void (*cleanupFn)(void *)) {
+    return __internal_functions.add_reent_context_ptr(moduleId, reentPtr, cleanupFn);
 }
 
 static void reclaim_reent_trampoline(void *payload) {
@@ -56,7 +53,9 @@ static void reclaim_reent_trampoline(void *payload) {
     if (payload) {
         auto *reentPtr = static_cast<_reent *>(payload);
         _reclaim_reent(reentPtr);
-        free(reentPtr);
+
+        // Make sure to use MEMFreeToDefaultHeap
+        MEMFreeToDefaultHeap(reentPtr);
     }
 }
 
@@ -64,22 +63,18 @@ struct _reent *__wums_getreent() {
     if (!OSGetCurrentThread()) {
         return _GLOBAL_REENT;
     }
-    wums_loader_init_reent_errors_t_ error = WUMSReent_ERROR_NONE;
-    if (void *existingCtx = wums_backend_get_context(&sReentModuleId, &error)) {
+    void *existingCtx = nullptr;
+    if (!wums_backend_get_context(&sReentModuleId, &existingCtx)) {
+        return _GLOBAL_REENT;
+    }
+    // if non-null we can use it
+    if (existingCtx) {
         return static_cast<_reent *>(existingCtx);
     }
-    switch (error) {
-        case WUMSReent_ERROR_GLOBAL_REENT_REQUESTED:
-        case WUMSReent_ERROR_NO_THREAD:
-            return _GLOBAL_REENT;
-        case WUMSReent_ERROR_NONE:
-            break;
-    }
 
-    auto *oldHead  = wums_backend_set_sentinel();
-    auto *newReent = static_cast<struct _reent *>(malloc(sizeof(struct _reent)));
+    // Use `MEMAllocFromDefaultHeap` to avoid creating a new reent for allocating the reent
+    auto *newReent = static_cast<struct _reent *>(MEMAllocFromDefaultHeap(sizeof(struct _reent)));
     if (!newReent) {
-        wums_backend_restore_head(oldHead);
         return _GLOBAL_REENT;
     }
 
@@ -87,17 +82,16 @@ struct _reent *__wums_getreent() {
 
     _REENT_INIT_PTR(newReent);
 
-    bool result = wums_backend_register_context(
+    const bool result = wums_backend_register_context(
             &sReentModuleId,
             newReent,
-            reclaim_reent_trampoline,
-            oldHead);
+            reclaim_reent_trampoline);
 
     if (!result) {
         WUMS_DEBUG_WARN("Failed to register context for thread %p\n", OSGetCurrentThread());
         _reclaim_reent(newReent);
-        free(newReent);
-        wums_backend_restore_head(oldHead);
+        // Make sure to call the free function
+        MEMFreeToDefaultHeap(newReent);
         return _GLOBAL_REENT;
     }
 
