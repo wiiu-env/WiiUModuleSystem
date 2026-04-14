@@ -5,7 +5,6 @@
 #include <cstring>
 
 extern "C" void OSFatal(const char *);
-extern "C" void OSFatal(const char *);
 
 int main(int argc, char **argv) {
     OSFatal("This file needs to be run with the Wii U Module Loader.");
